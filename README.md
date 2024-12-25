@@ -24,7 +24,6 @@ Hi! **I'm Akash Bv**, a Junior Data Scientist 👋🏻 with a passion for uncove
 ---
 [![](https://visitcount.itsvg.in/api?id=akashBv6680&icon=5&color=3)](https://visitcount.itsvg.in)
 
-[![](https://visitcount.itsvg.in/api?id=akashBv6680&label=Profile%20Views&color=2&icon=5&pretty=true)](https://visitcount.itsvg.in)
 
 <a href="https://visitcount.itsvg.in">
   <img src="https://visitcount.itsvg.in/api?id=akashBv6680&label=Profile%20Views&color=2&icon=5&pretty=true" />
