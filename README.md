@@ -1,5 +1,5 @@
 # 💫 About Me:
-Hi! I'm Akash Bv, a Junior Data Scientist 👋🏻 with a passion for uncovering hidden insights and driving business growth. I help data-forward companies create interactive reports and visualizations that inform decision-making. With expertise in 📊 data analysis, 📈 machine learning, and 📊 data visualization, I automate reports that connect to all your data, saving you time and resources. Let's collaborate and unlock the power of your data! 💡<br>View my portfolio:<br> https://portfolio-akash-bv-b10ut8o.gamma.site/
+Hi! **I'm Akash Bv**, a Junior Data Scientist 👋🏻 with a passion for uncovering hidden insights and driving business growth. I help data-forward companies create interactive reports and visualizations that inform decision-making. With expertise in 📊 data analysis, 📈 machine learning, and 📊 data visualization, I automate reports that connect to all your data, saving you time and resources. Let's collaborate and unlock the power of your data! 💡<br>View my **portfolio:** <br> https://portfolio-akash-bv-b10ut8o.gamma.site/
 
 
 ## 🌐 Socials:
