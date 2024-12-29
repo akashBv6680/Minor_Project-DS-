@@ -1,0 +1,19 @@
+Here are some key statistical concepts:
+
+1. Mean: The average value of a dataset.
+2. Median: The middle value of a dataset when it's sorted in order.
+3. Mode: The value that appears most frequently in a dataset.
+4. Standard Deviation: A measure of how spread out a dataset is from the mean.
+5. Variance: The average of the squared differences from the mean.
+6. Correlation: A measure of the relationship between two variables.
+7. Regression: A model that predicts the value of one variable based on another.
+8. Hypothesis Testing: A method to test a claim about a population based on a sample of data.
+9. Confidence Interval: A range of values that likely contains the true population parameter.
+10. P-value: The probability of obtaining a result as extreme or more extreme than the one observed.
+11. Sample Size: The number of observations in a dataset.
+12. Population: The entire group of individuals or data points you want to understand.
+13. Bias: Systematic error in a statistical model or measurement.
+14. Significance: Whether a result is unlikely to occur by chance (typically p < 0.05).
+15. Distribution: The pattern of values in a dataset (e.g., normal, skewed, binomial).
+
+These concepts are fundamental to understanding statistical analysis and data science. Let me know if you'd like me to elaborate on any of these!

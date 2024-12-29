@@ -1,0 +1,20 @@
+[1:08 PM, 7/9/2024] Akash: data tools and software examples
+[1:08 PM, 7/9/2024] Meta AI: Here are some data tools and software examples ¹ ²:
+- Microsoft Excel: A versatile data analysis tool with capabilities that include managing, sorting, filtering, cleaning, analyzing and visualizing data sets.
+- Python: A popular programming language used for web development, software development and data analysis.
+- R: A programming language used for statistical analysis, data visualization and data manipulation.
+- Tableau: A data visualization software used for business analytics and intelligence.
+- MySQL: A relational database management system used for storing application data.
+- SAS: A software suite used for statistical analysis, business intelligence and predictive analytics.
+- Jupyter Notebook: An interactive environment used for sharing computational documents.
+- Airflow: A workflow management platform used for scheduling and running complex data pipelines.
+- Delta Lake: A storage layer that delivers reliability, security and performance on your data lake.
+- Drill: A low latency distributed query engine used for large-scale datasets.
+- Druid: A real-time analytics database that delivers low latency for queries and high concurrency.
+- Flink: A stream processing framework that supports stateful computations over bounded and unbounded data streams.
+- Hadoop: A distributed framework that stores data and runs applications on clusters of commodity hardware.
+- Hive: SQL-based data warehouse infrastructure software that reads, writes and manages large data sets.
+- HPCC Systems: A big data processing platform that processes, manages and delivers data.
+- Hudi: A technology used to manage the ingestion and storage of large analytics data sets.
+- Iceberg: An open table format used to manage data in data lakes.
+- Kafka: A distributed event streaming platform used for high-performance data pipelines, streaming analytics and data integration.

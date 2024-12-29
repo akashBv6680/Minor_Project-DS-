@@ -1,0 +1,51 @@
+Here's a simple example of data modeling:
+
+Entity-Relationship Diagram (ERD) for an Online Shopping System
+
+Entities:
+
+- Customer
+- Order
+- Product
+- Payment Method
+
+Attributes:
+
+- Customer:
+    - Customer ID (primary key)
+    - Name
+    - Email
+    - Password
+- Order:
+    - Order ID (primary key)
+    - Customer ID (foreign key)
+    - Order Date
+    - Total Amount
+- Product:
+    - Product ID (primary key)
+    - Name
+    - Price
+    - Description
+- Payment Method:
+    - Payment Method ID (primary key)
+    - Customer ID (foreign key)
+    - Payment Type (e.g., credit card, PayPal)
+
+Relationships:
+
+- A customer can make many orders (one-to-many).
+- An order is made by one customer (many-to-one).
+- An order can have many products (many-to-many).
+- A product can be part of many orders (many-to-many).
+- A customer can have many payment methods (one-to-many).
+
+Data Model:
+
+This data model captures the key entities, attributes, and relationships in an online shopping system. It helps to:
+
+- Understand the data structures and relationships
+- Identify data dependencies and constraints
+- Design a database schema
+- Support business processes and analytics
+
+This is a simplified example, but data modeling can be applied to various domains and systems, and can become more complex depending on the specific requirements.
