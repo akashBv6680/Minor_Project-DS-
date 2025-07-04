@@ -1,0 +1,25 @@
+# Python virtual environment
+.venv/
+venv/
+
+# PyCharm
+.idea/
+
+# Python cache files
+__pycache__/
+*.pyc
+
+# Streamlit
+.streamlit/local/
+
+# Operating System junk
+.DS_Store
+Thumbs.db
+
+# Temp files from Sweetviz
+*.html
+
+# Project-specific folders that might contain other virtual environments or build artifacts
+JupyterProject/
+Mystreamlitapp/
+PythonProject/Lib/ # This is critical if you have other Python projects nested.
