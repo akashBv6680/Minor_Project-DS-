@@ -1,7 +1,4 @@
 streamlit
-pandas==1.5.3  # D-Tale often works well with more recent pandas
-dtale==3.17.0
-Flask==2.3.3   # Pin Flask explicitly
-xarray==2023.1.0 # D-Tale dependency
-fsspec==2023.6.0 # D-Tale dependency
+pandas
+pandas-summary
 openpyxl
