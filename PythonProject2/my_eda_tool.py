@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
 import warnings
 
 # Suppress warnings that might clutter the Streamlit output
@@ -8,14 +9,14 @@ warnings.filterwarnings('ignore', category=UserWarning)
 warnings.filterwarnings('ignore', category=DeprecationWarning)
 
 st.set_page_config(
-    page_title="Pandas-Summary EDA App",
-    page_icon="📋",
+    page_title="Klib EDA App",
+    page_icon="📊",
     layout="wide",  # Use wide layout for better display
     initial_sidebar_state="expanded"
 )
 
-st.title("📋 Pandas-Summary Exploratory Data Analysis App")
-st.markdown("Upload a **CSV** or **Excel (.xlsx)** file to generate a Pandas-Summary report.")
+st.title("📊 Klib Automated EDA App")
+st.markdown("Upload a **CSV** or **Excel (.xlsx)** file to generate Klib visualizations.")
 
 # --- File Uploader ---
 uploaded_file = st.file_uploader("Choose a data file", type=["csv", "xlsx"])
@@ -39,28 +40,30 @@ if uploaded_file is not None:
             st.dataframe(df.head())
 
             st.markdown("---")
-            st.write("### Generating Pandas-Summary Report...")
-            st.info("Please wait while Pandas-Summary analyzes your data.")
+            st.write("### Generating Klib Visualizations...")
+            st.info("Please wait while Klib analyzes your data and generates plots.")
 
             try:
-                from pandas_summary import DataFrameSummary
+                import klib
 
-                with st.spinner("Calculating summary statistics..."):
-                    # Generate the DataFrameSummary
-                    dfs = DataFrameSummary(df)
+                with st.spinner("Generating missing value plot..."):
+                    st.subheader("1. Missing Value Plot")
+                    fig_missing = klib.missingval_plot(df)
+                    st.pyplot(fig_missing)  # Display matplotlib figure directly
+                    plt.close(fig_missing)  # Close the figure to free up memory
 
-                st.success("Pandas-Summary report generated!")
-                st.write("### DataFrame Summary Statistics:")
+                with st.spinner("Generating correlation plot..."):
+                    st.subheader("2. Correlation Plot (Heatmap)")
+                    fig_corr = klib.corr_plot(df)
+                    st.pyplot(fig_corr)  # Display matplotlib figure directly
+                    plt.close(fig_corr)  # Close the figure to free up memory
 
-                # DataFrameSummary outputs its statistics as a pandas DataFrame
-                # We display the 'columns_stats' which gives an overview of each column
-                st.dataframe(dfs.columns_stats)
-
+                st.success("Klib plots generated!")
                 st.info(
-                    "Pandas-Summary provides concise statistics for each column, including missing values, unique counts, and typical descriptive stats.")
+                    "Klib also provides functions for data cleaning and manipulation. Check its documentation for more features.")
 
             except Exception as e:
-                st.error(f"Error generating Pandas-Summary report: {e}.")
+                st.error(f"Error generating Klib plots: {e}.")
                 st.exception(e)  # Show full traceback for debugging
 
         else:
@@ -71,7 +74,7 @@ if uploaded_file is not None:
         st.error(f"An error occurred while processing the file: {e}")
         st.info("Please ensure your file is a valid CSV or XLSX and try again.")
 else:
-    st.info("Please upload a data file to generate the Pandas-Summary report.")
+    st.info("Please upload a data file to generate Klib EDA plots.")
 
 st.markdown("---")
-st.markdown("Built with ❤️ using Streamlit and Pandas-Summary.")
+st.markdown("Built with ❤️ using Streamlit and Klib.")
