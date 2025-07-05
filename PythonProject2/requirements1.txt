@@ -1,4 +1,4 @@
 streamlit
-pandas
-pandas-summary
+pandas==1.5.3
+pandas-summary==0.0.7
 openpyxl
