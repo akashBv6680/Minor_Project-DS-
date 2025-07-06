@@ -1,5 +1,8 @@
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np  # For generating sample data
 import warnings
 
 # Suppress warnings that might clutter the Streamlit output
@@ -8,70 +11,126 @@ warnings.filterwarnings('ignore', category=UserWarning)
 warnings.filterwarnings('ignore', category=DeprecationWarning)
 
 st.set_page_config(
-    page_title="Pandas-Summary EDA App",
-    page_icon="📋",
-    layout="wide",  # Use wide layout for better display
+    page_title="My Data Story",
+    page_icon="📖",
+    layout="wide",
     initial_sidebar_state="expanded"
 )
 
-st.title("📋 Pandas-Summary Exploratory Data Analysis App")
-st.markdown("Upload a **CSV** or **Excel (.xlsx)** file to generate a Pandas-Summary report.")
+st.title("📖 Telling a Story with Data")
 
-# --- File Uploader ---
-uploaded_file = st.file_uploader("Choose a data file", type=["csv", "xlsx"])
+st.markdown("""
+Welcome to this interactive data story! We'll explore a hypothetical dataset about customer engagement over time.
+Our goal is to understand trends and identify key periods.
+""")
 
-df = None
-if uploaded_file is not None:
-    st.success(f"File '{uploaded_file.name}' uploaded successfully!")
-    file_type = uploaded_file.name.split('.')[-1].lower()
+st.header("Chapter 1: The Initial Trend")
 
-    try:
-        if file_type == "csv":
-            df = pd.read_csv(uploaded_file)
-        elif file_type == "xlsx":
-            df = pd.read_excel(uploaded_file)
-        else:
-            st.error(f"Unsupported file type: {file_type}. Please upload a CSV or XLSX file.")
-            st.stop()  # Stop execution if file type is not supported
+st.markdown("""
+Let's start by looking at the overall customer engagement. We've recorded the daily engagement score for a period.
+""")
 
-        if df is not None and not df.empty:
-            st.write("### Original DataFrame (First 5 rows):")
-            st.dataframe(df.head())
+# --- Generate Sample Data ---
+# For a real app, you'd load from a file using st.file_uploader
+if 'data_story_df' not in st.session_state:
+    dates = pd.date_range(start='2024-01-01', periods=100, freq='D')
+    engagement = np.random.normal(loc=50, scale=10, size=100).cumsum() + 200
+    st.session_state.data_story_df = pd.DataFrame({'Date': dates, 'Engagement': engagement})
+    st.session_state.data_story_df['Day_of_Week'] = st.session_state.data_story_df['Date'].dt.day_name()
+    st.session_state.data_story_df['Month'] = st.session_state.data_story_df['Date'].dt.month_name()
 
-            st.markdown("---")
-            st.write("### Generating Pandas-Summary Report...")
-            st.info("Please wait while Pandas-Summary analyzes your data.")
+df = st.session_state.data_story_df
 
-            try:
-                from pandas_summary import DataFrameSummary
+st.write("### Daily Engagement Over Time")
+fig1, ax1 = plt.subplots(figsize=(10, 5))
+sns.lineplot(x='Date', y='Engagement', data=df, ax=ax1)
+ax1.set_title("Customer Engagement Trend")
+ax1.set_xlabel("Date")
+ax1.set_ylabel("Engagement Score")
+st.pyplot(fig1)
+plt.close(fig1)
 
-                with st.spinner("Calculating summary statistics..."):
-                    # Generate the DataFrameSummary
-                    dfs = DataFrameSummary(df)
+st.markdown("""
+From this initial view, we can see a general upward trend, but there are some fluctuations.
+Let's dive deeper into specific periods or aspects.
+""")
 
-                st.success("Pandas-Summary report generated!")
-                st.write("### DataFrame Summary Statistics:")
+st.header("Chapter 2: Uncovering Weekly Patterns")
 
-                # DataFrameSummary outputs its statistics as a pandas DataFrame
-                # We display the 'columns_stats' which gives an overview of each column
-                st.dataframe(dfs.columns_stats)
+st.markdown("Is there a pattern based on the day of the week? Let's check the average engagement by day.")
 
-                st.info(
-                    "Pandas-Summary provides concise statistics for each column, including missing values, unique counts, and typical descriptive stats.")
+show_weekly_pattern = st.checkbox("Show Average Engagement by Day of Week")
 
-            except Exception as e:
-                st.error(f"Error generating Pandas-Summary report: {e}.")
-                st.exception(e)  # Show full traceback for debugging
+if show_weekly_pattern:
+    weekly_avg = df.groupby('Day_of_Week')['Engagement'].mean().reindex(
+        ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    )
 
-        else:
-            st.warning(
-                "The uploaded file resulted in an empty DataFrame or could not be processed. Please check your data.")
+    st.write("### Average Engagement by Day of Week")
+    fig2, ax2 = plt.subplots(figsize=(8, 4))
+    sns.barplot(x=weekly_avg.index, y=weekly_avg.values, ax=ax2, palette='viridis')
+    ax2.set_title("Average Engagement by Day of Week")
+    ax2.set_xlabel("Day of Week")
+    ax2.set_ylabel("Average Engagement Score")
+    ax2.tick_params(axis='x', rotation=45)
+    st.pyplot(fig2)
+    plt.close(fig2)
 
-    except Exception as e:
-        st.error(f"An error occurred while processing the file: {e}")
-        st.info("Please ensure your file is a valid CSV or XLSX and try again.")
+    st.markdown("""
+    **Insight:** It looks like engagement tends to be higher on weekdays and slightly lower on weekends. This could inform our content scheduling!
+    """)
+
+st.header("Chapter 3: Focusing on a Key Event")
+
+st.markdown("""
+Imagine there was a major marketing campaign or product launch around **February 2024**.
+Let's see how engagement changed around that time.
+""")
+
+# Use a slider to select a date range
+min_date = df['Date'].min().to_pydatetime()
+max_date = df['Date'].max().to_pydatetime()
+
+selected_date_range = st.slider(
+    "Select Date Range to Zoom In:",
+    value=(min_date, max_date),
+    format="YYYY-MM-DD"
+)
+
+start_zoom_date, end_zoom_date = selected_date_range
+
+zoomed_df = df[(df['Date'] >= start_zoom_date) & (df['Date'] <= end_zoom_date)]
+
+if not zoomed_df.empty:
+    st.write(f"### Engagement from {start_zoom_date.strftime('%Y-%m-%d')} to {end_zoom_date.strftime('%Y-%m-%d')}")
+    fig3, ax3 = plt.subplots(figsize=(10, 5))
+    sns.lineplot(x='Date', y='Engagement', data=zoomed_df, ax=ax3)
+    ax3.set_title(f"Customer Engagement ({start_zoom_date.strftime('%b %d')} - {end_zoom_date.strftime('%b %d')})")
+    ax3.set_xlabel("Date")
+    ax3.set_ylabel("Engagement Score")
+    st.pyplot(fig3)
+    plt.close(fig3)
+
+    st.markdown("""
+    **Observation:** By zooming into specific periods, we can observe the immediate impact of events.
+    Notice any spikes or dips around your selected range?
+    """)
 else:
-    st.info("Please upload a data file to generate the Pandas-Summary report.")
+    st.info("No data available for the selected date range. Please adjust the slider.")
+
+st.header("Conclusion: What We've Learned")
+st.markdown("""
+Through this interactive story, we've:
+* Identified the overall trend of customer engagement.
+* Discovered a recurring weekly pattern.
+* Gained the ability to zoom into specific events to see their immediate impact.
+
+This approach allows stakeholders to explore the data at their own pace and understand the narrative directly.
+""")
+
+# Example of an image
+st.image("https://images.unsplash.com/photo-1549057446-948f219fcd83", caption="Data Storytelling in Action",
+         use_column_width=True)
 
 st.markdown("---")
-st.markdown("Built with ❤️ using Streamlit and Pandas-Summary.")
+st.markdown("Thank you for exploring this data story!")
