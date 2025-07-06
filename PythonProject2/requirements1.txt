@@ -1,5 +1,7 @@
 streamlit
-pandas
-klib
-matplotlib
+pandas==1.3.5       # Reverting to 1.3.5 as it worked reliably for Sweetviz
+pandas-summary==0.0.7
+numpy==1.21.6       # Essential for pandas 1.3.5 compatibility
+scipy==1.7.3        # A common dependency for many numerical libraries
+matplotlib          # Indirectly used for some pandas-summary features or sub-dependencies
 openpyxl
