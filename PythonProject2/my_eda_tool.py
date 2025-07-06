@@ -1,136 +1,173 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-import numpy as np  # For generating sample data
+import sweetviz as sv
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression  # Example ML model
+from sklearn.metrics import mean_squared_error, r2_score
 import warnings
 
-# Suppress warnings that might clutter the Streamlit output
 warnings.filterwarnings('ignore', category=FutureWarning)
 warnings.filterwarnings('ignore', category=UserWarning)
 warnings.filterwarnings('ignore', category=DeprecationWarning)
 
 st.set_page_config(
-    page_title="My Data Story",
-    page_icon="📖",
+    page_title="ML Prediction Analysis with Sweetviz",
+    page_icon="🤖",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-st.title("📖 Telling a Story with Data")
+st.title("🤖 Analyze ML Predictions with Sweetviz")
+st.markdown(
+    "Upload a dataset to train a simple Linear Regression model and then analyze its predictions using Sweetviz.")
 
-st.markdown("""
-Welcome to this interactive data story! We'll explore a hypothetical dataset about customer engagement over time.
-Our goal is to understand trends and identify key periods.
-""")
+# --- File Uploader ---
+uploaded_file = st.file_uploader("Choose your data file (CSV or XLSX)", type=["csv", "xlsx"])
 
-st.header("Chapter 1: The Initial Trend")
+if uploaded_file is not None:
+    st.success(f"File '{uploaded_file.name}' uploaded successfully!")
+    file_type = uploaded_file.name.split('.')[-1].lower()
 
-st.markdown("""
-Let's start by looking at the overall customer engagement. We've recorded the daily engagement score for a period.
-""")
+    try:
+        if file_type == "csv":
+            df = pd.read_csv(uploaded_file)
+        elif file_type == "xlsx":
+            df = pd.read_excel(uploaded_file)
 
-# --- Generate Sample Data ---
-# For a real app, you'd load from a file using st.file_uploader
-if 'data_story_df' not in st.session_state:
-    dates = pd.date_range(start='2024-01-01', periods=100, freq='D')
-    engagement = np.random.normal(loc=50, scale=10, size=100).cumsum() + 200
-    st.session_state.data_story_df = pd.DataFrame({'Date': dates, 'Engagement': engagement})
-    st.session_state.data_story_df['Day_of_Week'] = st.session_state.data_story_df['Date'].dt.day_name()
-    st.session_state.data_story_df['Month'] = st.session_state.data_story_df['Date'].dt.month_name()
+        if df is not None and not df.empty:
+            st.write("### Original Data Preview:")
+            st.dataframe(df.head())
+            st.markdown("---")
 
-df = st.session_state.data_story_df
+            st.header("Step 1: Prepare Data for ML")
 
-st.write("### Daily Engagement Over Time")
-fig1, ax1 = plt.subplots(figsize=(10, 5))
-sns.lineplot(x='Date', y='Engagement', data=df, ax=ax1)
-ax1.set_title("Customer Engagement Trend")
-ax1.set_xlabel("Date")
-ax1.set_ylabel("Engagement Score")
-st.pyplot(fig1)
-plt.close(fig1)
+            # Identify numerical columns for features and target
+            numerical_cols = df.select_dtypes(include=np.number).columns.tolist()
 
-st.markdown("""
-From this initial view, we can see a general upward trend, but there are some fluctuations.
-Let's dive deeper into specific periods or aspects.
-""")
+            if len(numerical_cols) < 2:
+                st.warning("Need at least two numerical columns (features + target) for this example ML model.")
+                st.stop()
 
-st.header("Chapter 2: Uncovering Weekly Patterns")
+            feature_cols = st.multiselect(
+                "Select Feature Columns (X):",
+                numerical_cols,
+                default=numerical_cols[:-1] if len(numerical_cols) > 1 else []
+            )
+            target_col = st.selectbox(
+                "Select Target Column (y):",
+                [col for col in numerical_cols if col not in feature_cols]
+            )
 
-st.markdown("Is there a pattern based on the day of the week? Let's check the average engagement by day.")
+            if not feature_cols or not target_col:
+                st.info("Please select at least one feature column and a target column to proceed with ML.")
+                st.stop()
 
-show_weekly_pattern = st.checkbox("Show Average Engagement by Day of Week")
+            # Prepare X and y
+            X = df[feature_cols].dropna()
+            y = df.loc[X.index, target_col].dropna()  # Ensure y aligns with X's non-null rows
 
-if show_weekly_pattern:
-    weekly_avg = df.groupby('Day_of_Week')['Engagement'].mean().reindex(
-        ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-    )
+            if X.empty or y.empty or len(X) != len(y):
+                st.error(
+                    "Selected columns resulted in empty or mismatched data after dropping NaNs. Please choose different columns or clean your data.")
+                st.stop()
 
-    st.write("### Average Engagement by Day of Week")
-    fig2, ax2 = plt.subplots(figsize=(8, 4))
-    sns.barplot(x=weekly_avg.index, y=weekly_avg.values, ax=ax2, palette='viridis')
-    ax2.set_title("Average Engagement by Day of Week")
-    ax2.set_xlabel("Day of Week")
-    ax2.set_ylabel("Average Engagement Score")
-    ax2.tick_params(axis='x', rotation=45)
-    st.pyplot(fig2)
-    plt.close(fig2)
+            st.write(f"Using {len(feature_cols)} features and '{target_col}' as target.")
+            st.markdown("---")
 
-    st.markdown("""
-    **Insight:** It looks like engagement tends to be higher on weekdays and slightly lower on weekends. This could inform our content scheduling!
-    """)
+            st.header("Step 2: Train & Predict with a Linear Regression Model")
 
-st.header("Chapter 3: Focusing on a Key Event")
+            if st.button("Train Model and Generate Predictions"):
+                # Split data
+                X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+                st.info(f"Data split into {len(X_train)} training samples and {len(X_test)} testing samples.")
 
-st.markdown("""
-Imagine there was a major marketing campaign or product launch around **February 2024**.
-Let's see how engagement changed around that time.
-""")
+                # Train model
+                model = LinearRegression()
+                with st.spinner("Training Linear Regression model..."):
+                    model.fit(X_train, y_train)
+                st.success("Model training complete!")
 
-# Use a slider to select a date range
-min_date = df['Date'].min().to_pydatetime()
-max_date = df['Date'].max().to_pydatetime()
+                # Make predictions
+                with st.spinner("Generating predictions..."):
+                    y_pred = model.predict(X_test)
+                st.success("Predictions generated!")
 
-selected_date_range = st.slider(
-    "Select Date Range to Zoom In:",
-    value=(min_date, max_date),
-    format="YYYY-MM-DD"
-)
+                # Evaluate model
+                mse = mean_squared_error(y_test, y_pred)
+                r2 = r2_score(y_test, y_pred)
+                st.write(f"**Model Performance on Test Set:**")
+                st.write(f"Mean Squared Error (MSE): `{mse:.2f}`")
+                st.write(f"R-squared (R²): `{r2:.2f}`")
+                st.markdown("---")
 
-start_zoom_date, end_zoom_date = selected_date_range
+                st.header("Step 3: Analyze Predictions with Sweetviz")
+                st.markdown("""
+                Now, let's combine the original test features, actual target values, and our model's predictions
+                into a new DataFrame and analyze it using Sweetviz!
+                """)
 
-zoomed_df = df[(df['Date'] >= start_zoom_date) & (df['Date'] <= end_zoom_date)]
+                # Create a DataFrame for Sweetviz analysis
+                analysis_df = X_test.copy()
+                analysis_df['Actual_Target'] = y_test
+                analysis_df['Predicted_Target'] = y_pred
+                analysis_df['Prediction_Error'] = y_test - y_pred  # Add residuals for analysis
 
-if not zoomed_df.empty:
-    st.write(f"### Engagement from {start_zoom_date.strftime('%Y-%m-%d')} to {end_zoom_date.strftime('%Y-%m-%d')}")
-    fig3, ax3 = plt.subplots(figsize=(10, 5))
-    sns.lineplot(x='Date', y='Engagement', data=zoomed_df, ax=ax3)
-    ax3.set_title(f"Customer Engagement ({start_zoom_date.strftime('%b %d')} - {end_zoom_date.strftime('%b %d')})")
-    ax3.set_xlabel("Date")
-    ax3.set_ylabel("Engagement Score")
-    st.pyplot(fig3)
-    plt.close(fig3)
+                st.write("### Data for Sweetviz (Test Set + Predictions):")
+                st.dataframe(analysis_df.head())
 
-    st.markdown("""
-    **Observation:** By zooming into specific periods, we can observe the immediate impact of events.
-    Notice any spikes or dips around your selected range?
-    """)
+                try:
+                    # Generate the Sweetviz report on the augmented DataFrame
+                    my_report = sv.analyze(analysis_df,
+                                           target_feat='Actual_Target')  # You can set target_feat if desired
+                    report_html_path = "sweetviz_predictions_report.html"
+                    my_report.save_html(report_html_path)
+
+                    st.success("Sweetviz report on predictions generated!")
+                    st.markdown("### Interactive Prediction Analysis Report:")
+
+                    import os
+
+                    if os.path.exists(report_html_path):
+                        with open(report_html_path, "rb") as f:
+                            html_content = f.read()
+
+                        st.download_button(
+                            label="Download Prediction Analysis Report (HTML)",
+                            data=html_content,
+                            file_name="sweetviz_predictions_report.html",
+                            mime="text/html"
+                        )
+                        st.info("""
+                        Click the button above to download the report. In it, you can explore:
+                        * The distribution of `Predicted_Target` and `Actual_Target`.
+                        * The correlation between `Actual_Target` and `Predicted_Target` (should be high!).
+                        * The distribution of `Prediction_Error` (ideally centered around zero).
+                        * How individual features relate to both actuals and predictions.
+                        """)
+                    else:
+                        st.error(f"Sweetviz report HTML file not found at {report_html_path}.")
+
+                except Exception as e:
+                    st.error(f"Error generating Sweetviz report on predictions: {e}.")
+                    st.exception(e)
+                finally:
+                    if os.path.exists(report_html_path):
+                        os.remove(report_html_path)
+
+            else:
+                st.info(
+                    "Click the button above to start the ML process and generate the Sweetviz report on predictions.")
+
+        else:
+            st.warning(
+                "The uploaded file resulted in an empty DataFrame or could not be processed. Please check your data.")
+
+    except Exception as e:
+        st.error(f"An error occurred while reading or processing the file: {e}")
+        st.info("Please ensure your file is a valid CSV or XLSX and try again.")
 else:
-    st.info("No data available for the selected date range. Please adjust the slider.")
-
-st.header("Conclusion: What We've Learned")
-st.markdown("""
-Through this interactive story, we've:
-* Identified the overall trend of customer engagement.
-* Discovered a recurring weekly pattern.
-* Gained the ability to zoom into specific events to see their immediate impact.
-
-This approach allows stakeholders to explore the data at their own pace and understand the narrative directly.
-""")
-
-# Example of an image
-st.image("https://images.unsplash.com/photo-1549057446-948f219fcd83", caption="Data Storytelling in Action",
-         use_column_width=True)
+    st.info("Upload your data file to begin analyzing ML predictions with Sweetviz.")
 
 st.markdown("---")
-st.markdown("Thank you for exploring this data story!")
+st.markdown("Built with ❤️ using Streamlit, Sweetviz, and Scikit-learn.")
