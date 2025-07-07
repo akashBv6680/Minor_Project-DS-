@@ -1,0 +1,7 @@
+streamlit
+pandas==1.5.3
+sweetviz==2.2.1
+numpy==1.23.5
+openpyxl
+matplotlib
+scikit-learn # Add this for ML models
